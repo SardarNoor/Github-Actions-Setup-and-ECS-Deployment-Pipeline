@@ -1,0 +1,13 @@
+{
+  "name": "ecs-demo-ui-app",
+  "version": "1.0.0",
+  "description": "Node.js UI app for ECS deployment via GitHub Actions",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node -e \"console.log('tests passed')\""
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ECS Demo UI App</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div class="badge">ECS Deployment Demo</div>
+        <h1 id="appTitle">Loading…</h1>
+        <p class="subtitle">
+          This page proves your GitHub Actions → ECR → ECS deployment is working.
+        </p>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <h2>Deployment Info</h2>
+          <div class="kv">
+            <div class="k">Environment</div><div class="v" id="env">—</div>
+            <div class="k">Version</div><div class="v" id="version">—</div>
+            <div class="k">Commit SHA</div><div class="v mono" id="sha">—</div>
+            <div class="k">Hostname</div><div class="v mono" id="hostname">—</div>
+            <div class="k">App Started</div><div class="v mono" id="startedAt">—</div>
+            <div class="k">Server Time</div><div class="v mono" id="now">—</div>
+          </div>
+
+          <div class="actions">
+            <button id="refreshBtn">Refresh</button>
+            <a class="link" href="/health" target="_blank">/health</a>
+            <a class="link" href="/api/info" target="_blank">/api/info</a>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>What to demo in ECS</h2>
+          <ol class="steps">
+            <li>Push a commit to GitHub</li>
+            <li>GitHub Actions builds & pushes image to ECR</li>
+            <li>ECS service updates to new task definition</li>
+            <li>Refresh this page and see new <b>Commit SHA</b> / <b>Version</b></li>
+          </ol>
+
+          <div class="hint">
+            Tip: Use the commit SHA as the Docker tag so every deployment is unique.
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span class="mono">Made for ECS CI/CD demo</span>
+      </footer>
+    </div>
+
+    <script src="/public/app.js"></script>
+  </body>
+</html>
