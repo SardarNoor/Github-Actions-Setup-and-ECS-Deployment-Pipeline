@@ -50,7 +50,7 @@ cdk.out/
 # ------------------------
 # GitHub Actions
 # ------------------------
-.github/workflows/*.log
+.github/workflows/*.logs
 
 # ------------------------
 # Terraform (future-proof)
