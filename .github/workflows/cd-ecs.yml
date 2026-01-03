@@ -1,0 +1,100 @@
+name: CD - Deploy to ECS Fargate
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-west-1
+  AWS_ACCOUNT_ID: "504649076991"
+  ECR_REPOSITORY: task12repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::504649076991:role/Noor-github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get current task definition JSON
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition "${{ secrets.ECS_TASK_DEFINITION }}" \
+            --query taskDefinition \
+            > taskdef.json
+
+      - name: Render new task definition (update image)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest"
+          echo "Using IMAGE_URI=$IMAGE_URI"
+
+          python - << 'PY'
+          import json, os
+          image_uri = os.environ["IMAGE_URI"]
+          with open("taskdef.json") as f:
+            td = json.load(f)
+
+          # Keep only fields allowed in register-task-definition
+          keys = [
+            "family","taskRoleArn","executionRoleArn","networkMode",
+            "containerDefinitions","volumes","placementConstraints",
+            "requiresCompatibilities","cpu","memory","runtimePlatform",
+            "ipcMode","pidMode","proxyConfiguration","inferenceAccelerators",
+            "ephemeralStorage"
+          ]
+          new_td = {k: td.get(k) for k in keys if td.get(k) is not None}
+
+          # Update first container image (single-container app)
+          new_td["containerDefinitions"][0]["image"] = image_uri
+
+          with open("taskdef-rendered.json","w") as f:
+            json.dump(new_td, f, indent=2)
+          print("Rendered taskdef-rendered.json with updated image:", image_uri)
+          PY
+        shell: bash
+        
+          
+
+      - name: Register new task definition revision
+        id: register
+        run: |
+          REVISION_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://taskdef-rendered.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "revision_arn=$REVISION_ARN" >> $GITHUB_OUTPUT
+          echo "Registered: $REVISION_ARN"
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster "${{ secrets.ECS_CLUSTER }}" \
+            --service "${{ secrets.ECS_SERVICE }}" \
+            --task-definition "${{ steps.register.outputs.revision_arn }}" \
+            --force-new-deployment
+
+      - name: Wait for service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster "${{ secrets.ECS_CLUSTER }}" \
+            --services "${{ secrets.ECS_SERVICE }}"
