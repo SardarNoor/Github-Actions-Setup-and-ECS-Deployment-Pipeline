@@ -1,7 +1,7 @@
 
 # Task12 – CI/CD Pipeline using GitHub Actions and AWS ECS Fargate
 
-## 📌 Project Overview
+##  Project Overview
 This project demonstrates an **end-to-end CI/CD pipeline** for deploying a **Dockerized Node.js application** to **AWS ECS Fargate**, using **GitHub Actions** with **OIDC-based authentication**.
 
 The pipeline automates:
@@ -14,13 +14,13 @@ No long-term AWS credentials are used.
 
 ---
 
-## 🏗️ Architecture Diagram
+##  Architecture Diagram
 
 ![Task12 Architecture](Task12.PNG)
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **CI/CD**: GitHub Actions  
 - **Containerization**: Docker  
@@ -33,7 +33,7 @@ No long-term AWS credentials are used.
 
 ---
 
-## 🚀 CI/CD Workflow
+##  CI/CD Workflow
 
 ### Continuous Integration (CI)
 Triggered on every push to `main`:
@@ -53,7 +53,7 @@ Triggered after successful CI:
 
 ---
 
-## 📂 Repository Structure
+##  Repository Structure
 
 ```text
 .
@@ -73,7 +73,7 @@ Triggered after successful CI:
 
 ---
 
-## 🔐 Security Best Practices
+##  Security Best Practices
 
 * No AWS access keys stored in GitHub
 * IAM Role with least-privilege permissions
@@ -83,7 +83,7 @@ Triggered after successful CI:
 
 ---
 
-## 🔄 Rollback Strategy
+##  Rollback Strategy
 
 Rollback can be performed using:
 
@@ -94,7 +94,7 @@ Both options allow quick recovery in case of failed deployments.
 
 ---
 
-## ✅ Project Outcome
+##  Project Outcome
 
 * Fully automated CI/CD pipeline
 * Secure authentication using OIDC
@@ -104,7 +104,7 @@ Both options allow quick recovery in case of failed deployments.
 
 ---
 
-## 📈 Future Enhancements
+##  Future Enhancements
 
 * Add Application Load Balancer (ALB)
 * Enable HTTPS using ACM
@@ -113,7 +113,7 @@ Both options allow quick recovery in case of failed deployments.
 
 ---
 
-## 👤 Author
+##  Author
 
 **Sardar Noor Ul Hassan**
 DevOps / Cloud Engineer
